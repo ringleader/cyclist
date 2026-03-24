@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__desktop-commander__list_directory",
+      "mcp__desktop-commander__read_file",
+      "Bash(powershell -Command \"Get-ChildItem -Path 'C:\\\\Users\\\\james\\\\code\\\\cyclist' -Force -Recurse | Select-Object FullName, @{Name='Type';Expression={if\\($_.PSIsContainer\\){'DIR'}else{'FILE'}}} | Format-Table -AutoSize\")",
+      "WebSearch"
+    ]
+  }
+}

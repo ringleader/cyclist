@@ -1,0 +1,36 @@
+{
+  "title": "Cyclist",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Cyclist",
+        "description": "Configure your cycle parameters.",
+        "data": {
+          "cycle_length": "Cycle Length (Days)",
+          "period_duration": "Period Duration (Days)"
+        }
+      }
+    },
+    "error": {
+      "unknown": "Unexpected error",
+      "invalid_length": "Cycle length must be greater than period duration."
+    },
+    "abort": {
+      "already_configured": "Device is already configured"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Update Cyclist Settings",
+        "data": {
+          "cycle_length": "Cycle Length (Days)",
+          "period_duration": "Period Duration (Days)"
+        }
+      }
+    },
+    "error": {
+      "invalid_length": "Cycle length must be greater than period duration."
+    }
+  }
+}

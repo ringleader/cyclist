@@ -1,0 +1,12 @@
+{
+  "domain": "cyclist",
+  "name": "Cyclist",
+  "codeowners": [],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/your-username/cyclist",
+  "integration_type": "device",
+  "iot_class": "local_push",
+  "requirements": [],
+  "version": "1.0.0"
+}

@@ -1,0 +1,33 @@
+log_period_start:
+  name: Log Period Start
+  description: Mark period start. Defaults to today if date is omitted.
+  fields:
+    date:
+      name: Date
+      description: "Optional backdated start (YYYY-MM-DD)."
+      example: "2026-03-22"
+      selector:
+        date:
+
+update_settings:
+  name: Update Settings
+  description: Update cycle length and/or period duration.
+  fields:
+    cycle_length:
+      name: Cycle Length
+      description: "Days between period starts."
+      example: 28
+      selector:
+        number:
+          min: 15
+          max: 60
+          mode: box
+    period_duration:
+      name: Period Duration
+      description: "Days a period typically lasts."
+      example: 5
+      selector:
+        number:
+          min: 1
+          max: 14
+          mode: box

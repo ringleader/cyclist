@@ -1,0 +1,18 @@
+type: vertical-stack
+cards:
+  - type: entities
+    title: Menstrual Cycle
+    entities:
+      - entity: sensor.cyclist_cycle_day
+      - entity: sensor.cyclist_phase
+      - entity: sensor.cyclist_fertility
+      - entity: sensor.cyclist_next_period
+      - entity: binary_sensor.cyclist_period_active
+  - type: gauge
+    entity: sensor.cyclist_cycle_day
+    min: 1
+    max: 28 # Change to your cycle length
+    name: Cycle Progress
+  - type: calendar
+    entities:
+      - calendar.cyclist_predictions

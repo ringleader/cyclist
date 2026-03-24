@@ -1,0 +1,94 @@
+{
+  "title": "Cyclist",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Cyclist",
+        "description": "Configure your cycle parameters.",
+        "data": {
+          "cycle_length": "Cycle Length (Days)",
+          "period_duration": "Period Duration (Days)"
+        }
+      }
+    },
+    "error": {
+      "unknown": "Unexpected error",
+      "invalid_length": "Cycle length must be greater than period duration."
+    },
+    "abort": {
+      "already_configured": "Device is already configured"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Update Cyclist Settings",
+        "data": {
+          "cycle_length": "Cycle Length (Days)",
+          "period_duration": "Period Duration (Days)"
+        }
+      }
+    },
+    "error": {
+      "invalid_length": "Cycle length must be greater than period duration."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "cycle_day": {
+        "name": "Cycle Day"
+      },
+      "phase": {
+        "name": "Cycle Phase",
+        "state": {
+          "menstruation": "Menstruation",
+          "follicular": "Follicular",
+          "ovulation": "Ovulation",
+          "luteal": "Luteal"
+        }
+      },
+      "fertility": {
+        "name": "Fertility",
+        "state": {
+          "fertile": "Fertile",
+          "low": "Low",
+          "safer": "Safer"
+        }
+      },
+      "next_period": {
+        "name": "Next Period"
+      }
+    },
+    "binary_sensor": {
+      "period_active": {
+        "name": "Period Active"
+      }
+    }
+  },
+  "services": {
+    "log_period_start": {
+      "name": "Log Period Start",
+      "description": "Marks the start of a period. Will reset the cycle day to 1 on the given date.",
+      "fields": {
+        "date": {
+          "name": "Date",
+          "description": "The date the period started. Defaults to today."
+        }
+      }
+    },
+    "update_settings": {
+      "name": "Update Settings",
+      "description": "Updates cycle length or period duration settings.",
+      "fields": {
+        "cycle_length": {
+          "name": "Cycle Length",
+          "description": "Days between period starts."
+        },
+        "period_duration": {
+          "name": "Period Duration",
+          "description": "Typical length of a period in days."
+        }
+      }
+    }
+  }
+}
