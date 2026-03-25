@@ -5,9 +5,9 @@
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/ringleader/cyclist",
-  "issue_tracker": "https://github.com/ringleader/cyclist/issues",
   "integration_type": "device",
   "iot_class": "local_push",
+  "issue_tracker": "https://github.com/ringleader/cyclist/issues",
   "requirements": [],
   "version": "1.0.1"
 }
