@@ -1,12 +1,14 @@
 {
   "domain": "cyclist",
   "name": "Cyclist",
-  "codeowners": [],
+  "codeowners": ["@ringleader"],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/your-username/cyclist",
+  "documentation": "https://github.com/ringleader/cyclist",
   "integration_type": "device",
   "iot_class": "local_push",
   "requirements": [],
-  "version": "1.0.0"
+  "version": "1.0.1",
+  "logo": "https://raw.githubusercontent.com/ringleader/cyclist/main/custom_components/cyclist/logo.png",
+  "icon": "https://raw.githubusercontent.com/ringleader/cyclist/main/custom_components/cyclist/icon.png"
 }

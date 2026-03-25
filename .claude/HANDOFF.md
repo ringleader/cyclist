@@ -1,6 +1,6 @@
 # Cyclist — Handoff
 
-*Last updated: 2026-03-24 17:15*
+*Last updated: 2026-03-24 17:25*
 
 ---
 
@@ -10,47 +10,48 @@ A Home Assistant custom component for tracking menstrual cycles using calendar-b
 
 ## Current state
 
-- **Core Logic:** `cycle_math.py` is fully implemented and tested, covering phases, fertility windows, and predictions.
+- **Core Logic:** `cycle_math.py` is fully implemented and tested, covering phases, fertility windows, predictions, and advanced symptom-based tracking (BBT shift, CM peak, LH peak).
 - **Integration Scaffold:** `manifest.json`, `const.py`, and `__init__.py` are configured for local push and HACS compatibility.
-- **Entities:** `sensor.py` (Cycle Day, Phase, Fertility, Next Period) and `binary_sensor.py` (Period Active) are fully implemented.
+- **Improved Onboarding:** The initial Config Flow now asks for the `last_period_start` date (defaulting to today), ensuring sensors are never in an "unknown" or "broken" state upon first install.
+- **Entities:** `sensor.py` (Cycle Day, Phase, Fertility, Next Period, Confirmed Ovulation, Peak Day) and `binary_sensor.py` (Period Active) are fully implemented.
 - **Calendar:** `calendar.py` provides a 3-month forward-looking view of predicted periods and fertile windows.
-- **Services:** `log_period_start` and `update_settings` services are implemented with validation logic.
-- **Storage:** `storage.py` handles persistent JSON storage for settings and cycle state.
-- **Documentation:** `README.md` and `lovelace_example.yaml` are provided for user onboarding and dashboard setup.
-- **Testing:** `tests/test_cycle_math.py` contains the unit test suite for the core algorithms.
+- **Services:** `log_period_start`, `update_settings`, `log_symptom`, `log_bbt`, `log_cm`, and `log_lh` services are implemented with validation logic.
+- **UI Configuration:** Users can update all parameters, including the last period start date, directly from the integration's **Options Flow** (Device View).
+- **Storage:** `storage.py` handles persistent JSON storage for settings, cycle state, symptoms, and daily physiological logs.
+- **Documentation:** `README.md` (now featuring a brand logo) and `lovelace_example.yaml` are provided for user onboarding and dashboard setup.
+- **Testing:** `tests/test_cycle_math.py` contains the unit test suite for the core algorithms, including the advanced symptom-tracking logic.
 
 ## Load-bearing decisions
 
 - **No history required** — The system derives all predictions from the single "last period start" date and user settings. This avoids complex database migrations or data entry fatigue.
+- **Advanced Mode Fallback** — The system automatically switches from calendar-based estimates to data-driven confirmations (Symptothermal Method) if the user provides BBT, CM, or LH data.
 - **Settings over statistics** — Cycle length and period duration are authoritative user inputs, not computed averages. This gives the user direct control over the model's assumptions.
-- **Surgical Service Updates** — Services update all instances of the integration simultaneously, simplifying state management for single-user households.
+- **Immediate State Availability** — By requiring a start date at installation, we ensure that every entity provides valid data from the moment the integration is loaded.
 - **Fertility labeling** — Uses "safer" instead of "safe" to maintain appropriate medical caution and reflect the inherent ~21% accuracy of calendar methods.
 
 ## Active warnings
 
 - **Disclaimer** — This is a personal automation tool, NOT a medical device. Calendar-based prediction is an estimate and should always be combined with other methods for contraception.
-- **Future Dates** — The system explicitly rejects `log_period_start` calls for dates in the future to maintain data integrity.
+- **Future Dates** — The system explicitly rejects `log_period_start` and daily data calls for dates in the future to maintain data integrity.
 
 ## Discoveries
 
 - **Exclusive Calendar End Dates** — Home Assistant's `CalendarEvent` end dates are exclusive; calculations for multi-day windows like the fertile window require an extra day offset for correct rendering.
 - **Config Flow Validation** — Enforcing `cycle_length > period_duration` at the UI level prevents several division-by-zero or negative-range edge cases in the math logic.
+- **Improved UX with Options Flow** — Using the Options Flow for date updates provides a much more intuitive "Device Settings" experience than requiring users to find and call a service in Developer Tools.
+- **Advanced Tracking Precision** — Implementing the "3/6 rule" for BBT shift detection provides a robust way to confirm ovulation post-facto, while CM and LH data allow for real-time window identification.
 
 ## Where to start reading
 
-- `custom_components/cyclist/cycle_math.py`: The "brain" of the integration where all cycle logic lives.
-- `custom_components/cyclist/storage.py`: Understand how cycle state is persisted and how listeners are notified of changes.
+- `custom_components/cyclist/cycle_math.py`: The "brain" of the integration where all cycle logic, including advanced symptom tracking, lives.
+- `custom_components/cyclist/config_flow.py`: Handles the onboarding and update logic, including the date picker.
 - `custom_components/cyclist/calendar.py`: Key implementation of the predictive projection logic.
 
 ## Recent log
 
+- **Advanced Mode & Branding:** Implemented "Advanced Tracking" (BBT, CM, LH) with symptom-based ovulation confirmation. Added integration logo and icon assets.
+- **Onboarding UX Improved:** Added `last_period_start` to both Config Flow and Options Flow to prevent "unknown" states and simplify updates.
 - **M6 Complete:** Added `tests/test_cycle_math.py` and implemented strict input validation in config flows and services.
-- **M5 Complete:** Generated `README.md`, `hacs.json`, and `lovelace_example.yaml`.
-- **M4 Complete:** Implemented `calendar.py` for 3-month predictive projections.
-- **M3 Complete:** Implemented custom services and domain-level service registration in `__init__.py`.
-- **M2 Complete:** Implemented `sensor.py` and `binary_sensor.py` with dynamic state updates.
-- **M1 Complete:** Set up project skeleton, math logic, and storage layer.
-- **Initial Setup:** Analyzed `ROADMAP.md` and initialized the project structure.
 
 ---
 *Generated by /brief — append entries with /log — re-read with /orient*

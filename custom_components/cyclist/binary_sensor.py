@@ -24,7 +24,7 @@ async def async_setup_entry(
     cyclist_data: CyclistData = hass.data[DOMAIN][entry.entry_id]
 
     async_add_entities(
-        [PeriodActiveSensor(cyclist_data, entry.entry_id)]
+        [PeriodActiveSensor(cyclist_data, entry.entry_id, entry.title)]
     )
 
 
@@ -35,13 +35,13 @@ class PeriodActiveSensor(BinarySensorEntity):
     _attr_translation_key = "period_active"
     _attr_icon = "mdi:water"
 
-    def __init__(self, data: CyclistData, entry_id: str) -> None:
+    def __init__(self, data: CyclistData, entry_id: str, name: str) -> None:
         """Initialize the sensor."""
         self.cyclist_data = data
         self._attr_unique_id = f"{entry_id}_period_active"
         self._attr_device_info = {
             "identifiers": {(DOMAIN, entry_id)},
-            "name": "Cyclist",
+            "name": name,
         }
 
     async def async_added_to_hass(self) -> None:

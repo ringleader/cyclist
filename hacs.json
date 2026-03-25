@@ -1,0 +1,9 @@
+{
+  "name": "Cyclist",
+  "render_readme": true,
+  "hacs": "1.6.0",
+  "zip_release": false,
+  "filename": "cyclist.zip",
+  "iot_class": "Local Push",
+  "home_assistant": "2024.1.0"
+}

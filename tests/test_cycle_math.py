@@ -10,6 +10,10 @@ from custom_components.cyclist.cycle_math import (
     calculate_fertility_window,
     get_fertility,
     get_phase,
+    detect_bbt_shift,
+    detect_cm_peak,
+    detect_lh_peak,
+    get_ovulation_confirmation,
 )
 from custom_components.cyclist.const import (
     PHASE_MENSTRUATION,
@@ -19,6 +23,17 @@ from custom_components.cyclist.const import (
     FERTILITY_FERTILE,
     FERTILITY_LOW,
     FERTILITY_SAFER,
+    CM_DRY,
+    CM_STICKY,
+    CM_CREAMY,
+    CM_WATERY,
+    CM_EGGWHITE,
+    LH_NEGATIVE,
+    LH_POSITIVE,
+    LH_PEAK,
+    ATTR_BBT,
+    ATTR_CM,
+    ATTR_LH,
 )
 
 def test_calculate_cycle_day():
@@ -99,3 +114,85 @@ def test_long_cycle():
 def test_edge_cases():
     # day > cycle_length
     assert get_phase(30, 28, 5) == PHASE_LUTEAL
+
+def test_detect_bbt_shift():
+    # Baseline 6 days: 97.0
+    # Shift 3 days: 97.2 (delta 0.2)
+    temps = [97.0] * 6 + [97.2] * 3
+    assert detect_bbt_shift(temps) == 6
+    
+    # Not enough days
+    assert detect_bbt_shift([97.0] * 5 + [97.2] * 3) is None
+    
+    # Not high enough
+    temps = [97.0] * 6 + [97.05] * 3
+    assert detect_bbt_shift(temps) is None
+    
+    # High but not consecutive
+    temps = [97.0] * 6 + [97.2, 97.0, 97.2]
+    assert detect_bbt_shift(temps) is None
+
+def test_detect_cm_peak():
+    mucus = [CM_DRY, CM_STICKY, CM_WATERY, CM_EGGWHITE, CM_DRY]
+    # Last day of fertile mucus is index 3
+    assert detect_cm_peak(mucus) == 3
+    
+    mucus = [CM_DRY, CM_WATERY, CM_WATERY, CM_STICKY]
+    assert detect_cm_peak(mucus) == 2
+
+def test_detect_lh_peak():
+    lh = [LH_NEGATIVE, LH_NEGATIVE, LH_POSITIVE, LH_PEAK, LH_NEGATIVE]
+    # First positive result is index 2
+    assert detect_lh_peak(lh) == 2
+
+def test_get_ovulation_confirmation():
+    last_start = date(2026, 3, 1)
+    # Day 1-6: 97.0, CM dry
+    # Day 7: LH positive, CM egg_white
+    # Day 8: CM sticky
+    # Day 9-11: 97.2 (BBT shift)
+    daily_logs = {
+        "2026-03-01": {ATTR_BBT: 97.0, ATTR_CM: CM_DRY},
+        "2026-03-02": {ATTR_BBT: 97.0, ATTR_CM: CM_DRY},
+        "2026-03-03": {ATTR_BBT: 97.0, ATTR_CM: CM_DRY},
+        "2026-03-04": {ATTR_BBT: 97.0, ATTR_CM: CM_DRY},
+        "2026-03-05": {ATTR_BBT: 97.0, ATTR_CM: CM_DRY},
+        "2026-03-06": {ATTR_BBT: 97.0, ATTR_CM: CM_DRY},
+        "2026-03-07": {ATTR_CM: CM_EGGWHITE, ATTR_LH: LH_POSITIVE},
+        "2026-03-08": {ATTR_CM: CM_STICKY},
+        "2026-03-09": {ATTR_BBT: 97.2},
+        "2026-03-10": {ATTR_BBT: 97.2},
+        "2026-03-11": {ATTR_BBT: 97.2},
+    }
+    
+    conf = get_ovulation_confirmation(last_start, daily_logs, 28)
+    # BBT shift started on Day 9 (index 8)
+    assert conf["confirmed_day"] == 9
+    # CM peak was Day 7 (index 6)
+    assert conf["peak_day"] == 7
+    assert set(conf["methods"]) == {"bbt", "cm", "lh"}
+
+def test_advanced_fertility():
+    last_start = date(2026, 3, 1)
+    daily_logs = {
+        "2026-03-07": {ATTR_CM: CM_EGGWHITE}, # Day 7
+    }
+    
+    # Calendar would say day 7 is SAFER (fw starts day 10)
+    # But symptom says FERTILE
+    assert get_fertility(7, 28, last_start, daily_logs) == FERTILITY_FERTILE
+    
+    # After shift confirmed (Day 9)
+    daily_logs.update({
+        "2026-03-01": {ATTR_BBT: 97.0},
+        "2026-03-02": {ATTR_BBT: 97.0},
+        "2026-03-03": {ATTR_BBT: 97.0},
+        "2026-03-04": {ATTR_BBT: 97.0},
+        "2026-03-05": {ATTR_BBT: 97.0},
+        "2026-03-06": {ATTR_BBT: 97.0},
+        "2026-03-09": {ATTR_BBT: 97.2},
+        "2026-03-10": {ATTR_BBT: 97.2},
+        "2026-03-11": {ATTR_BBT: 97.2},
+    })
+    # Day 12 is 3 days after shift start (Day 9) -> SAFER
+    assert get_fertility(12, 28, last_start, daily_logs) == FERTILITY_SAFER

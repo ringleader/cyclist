@@ -16,6 +16,9 @@ from .cycle_math import calculate_fertility_window
 
 _LOGGER = logging.getLogger(__name__)
 
+# Warm Pink Hex Code
+COLOR_WARM_PINK = "#F06292"
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
@@ -23,21 +26,22 @@ async def async_setup_entry(
 ) -> None:
     """Set up the calendar platform."""
     cyclist_data: CyclistData = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities([CyclistCalendar(cyclist_data, entry.entry_id)])
+    async_add_entities([CyclistCalendar(cyclist_data, entry.entry_id, entry.title)])
 
 class CyclistCalendar(CalendarEntity):
     """Calendar entity for Cyclist predictions."""
 
     _attr_has_entity_name = True
     _attr_name = "Predictions"
+    _attr_icon = "mdi:calendar-heart"
 
-    def __init__(self, data: CyclistData, entry_id: str) -> None:
+    def __init__(self, data: CyclistData, entry_id: str, name: str) -> None:
         """Initialize the calendar."""
         self.cyclist_data = data
         self._attr_unique_id = f"{entry_id}_calendar"
         self._attr_device_info = {
             "identifiers": {(DOMAIN, entry_id)},
-            "name": "Cyclist",
+            "name": name,
         }
         self._events: list[CalendarEvent] = []
 
@@ -91,6 +95,14 @@ class CyclistCalendar(CalendarEntity):
             )
             
         self.async_write_ha_state()
+
+    @property
+    def extra_state_attributes(self) -> dict[str, str]:
+        """Return entity specific state attributes."""
+        return {
+            "color": COLOR_WARM_PINK,
+            "theme_color": COLOR_WARM_PINK,
+        }
 
     @property
     def event(self) -> CalendarEvent | None:

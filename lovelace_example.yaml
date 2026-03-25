@@ -16,3 +16,36 @@ cards:
   - type: calendar
     entities:
       - calendar.cyclist_predictions
+  - type: vertical-stack
+    title: Daily Tracking
+    cards:
+      - type: entities
+        entities:
+          - entity: sensor.cyclist_confirmed_ovulation
+          - entity: sensor.cyclist_peak_day
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Log BBT
+            icon: mdi:thermometer
+            tap_action:
+              action: call-service
+              service: cyclist.log_bbt
+              data:
+                value: 98.2
+          - type: button
+            name: Log CM
+            icon: mdi:water
+            tap_action:
+              action: call-service
+              service: cyclist.log_cm
+              data:
+                value: egg_white
+          - type: button
+            name: Log LH
+            icon: mdi:test-tube
+            tap_action:
+              action: call-service
+              service: cyclist.log_lh
+              data:
+                value: positive

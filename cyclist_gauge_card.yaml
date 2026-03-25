@@ -1,0 +1,35 @@
+type: custom:gauge-card-pro
+header: Cycle Tracker
+entity: sensor.cyclist_cycle_day
+entity2: sensor.cyclist_fertility_status
+min: 1
+max: "{{ (states('sensor.cyclist_cycle_day') | int(0) + states('sensor.cyclist_next_period') | int(0)) }}"
+needle: true
+gradient: true
+segments:
+  - pos: 0%
+    color: "#ef4444" # Red (Period)
+  - pos: 20%
+    color: "#3b82f6" # Blue (Follicular)
+  - pos: 35%
+    color: "#22c55e" # Green (Fertile Window)
+  - pos: 65%
+    color: "#f59e0b" # Orange (Luteal)
+value_texts:
+  primary: "Day {{ states(entity) }}"
+  secondary: "{{ states(entity2) | title | replace('_', ' ') }}"
+  secondary_color: >
+    {% set status = states('sensor.cyclist_fertility_status') %}
+    {% if status in ['high_chance', 'peak_fertility'] %}
+      #ef4444
+    {% elif status in ['caution', 'fertility_rising'] %}
+      #f59e0b
+    {% else %}
+      var(--secondary-text-color)
+    {% endif %}
+titles:
+  primary: "{{ states('sensor.cyclist_cycle_phase') | title }}"
+  secondary: "Next period in {{ states('sensor.cyclist_next_period') }} days"
+tap_action:
+  action: more-info
+  entity: sensor.cyclist_cycle_day

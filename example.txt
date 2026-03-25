@@ -1,0 +1,56 @@
+type: custom:gauge-card-pro
+header: Stove Monitor
+entity: sensor.stove_monitor_delux_temperature
+entity2: sensor.stove_monitor_temp_rate
+min: 100
+max: 900
+needle: true
+gradient: true
+segments:
+  - from: 100
+    color: "#3b82f6"
+  - from: 250
+    color: "#22c55e"
+  - from: 350
+    color: "#16a34a"
+  - from: 550
+    color: "#f59e0b"
+  - from: 700
+    color: "#ef4444"
+inner:
+  mode: on_main
+  min: -25
+  max: 25
+  needle_color: var(--primary-text-color)
+  segments:
+    - from: -25
+      color: "#3b82f6"
+    - from: -5
+      color: "#22c55e"
+    - from: 5
+      color: "#f59e0b"
+    - from: 15
+      color: "#ef4444"
+  gradient: true
+value_texts:
+  primary: "{{ states(entity) | float(0) | round(0) }}"
+  primary_unit: Â°F
+  secondary: "{{ states(entity2) | float(0) | round(1) }}"
+  secondary_unit: Â°F/min
+  primary_font_size_reduction: 0
+titles:
+  primary: "{{ states('sensor.stove_monitor_final_stove_monitor_final_zone') }}"
+  secondary: >-
+    Reload: {{
+    states('sensor.stove_monitor_final_stove_monitor_final_minutes_since_reload')
+    | float(0) | round(0) }} min
+setpoint:
+  value: 500
+  color: var(--primary-text-color)
+min_indicator:
+  show: true
+max_indicator:
+  show: true
+tap_action:
+  action: more-info
+  entity: sensor.stove_monitor_delux_temperature

@@ -4,10 +4,13 @@
     "step": {
       "user": {
         "title": "Set up Cyclist",
-        "description": "Configure your cycle parameters.",
+        "description": "Configure cycle parameters for a specific person.",
         "data": {
+          "name": "Name (e.g. Sarah)",
           "cycle_length": "Cycle Length (Days)",
-          "period_duration": "Period Duration (Days)"
+          "period_duration": "Period Duration (Days)",
+          "last_period_start": "Last Period Start Date",
+          "goal": "Primary Goal"
         }
       }
     },
@@ -16,7 +19,7 @@
       "invalid_length": "Cycle length must be greater than period duration."
     },
     "abort": {
-      "already_configured": "Device is already configured"
+      "already_configured": "This person is already configured"
     }
   },
   "options": {
@@ -25,12 +28,23 @@
         "title": "Update Cyclist Settings",
         "data": {
           "cycle_length": "Cycle Length (Days)",
-          "period_duration": "Period Duration (Days)"
+          "period_duration": "Period Duration (Days)",
+          "last_period_start": "Last Period Start Date",
+          "goal": "Primary Goal"
         }
       }
     },
     "error": {
       "invalid_length": "Cycle length must be greater than period duration."
+    }
+  },
+  "selector": {
+    "goal": {
+      "options": {
+        "track": "Just Tracking",
+        "avoid": "Avoid Pregnancy",
+        "plan": "Plan Pregnancy"
+      }
     }
   },
   "entity": {
@@ -48,25 +62,53 @@
         }
       },
       "fertility": {
-        "name": "Fertility",
+        "name": "Fertility Level",
         "state": {
           "fertile": "Fertile",
           "low": "Low",
           "safer": "Safer"
         }
       },
+      "fertility_status": {
+        "name": "Fertility Status",
+        "state": {
+          "fertile": "Fertile",
+          "low": "Low",
+          "safer": "Safer",
+          "high_chance": "High Chance",
+          "caution": "Caution",
+          "low_chance": "Low Chance",
+          "peak_fertility": "Peak Fertility",
+          "fertility_rising": "Fertility Rising",
+          "low_fertility": "Low Fertility"
+        }
+      },
       "next_period": {
         "name": "Next Period"
+      },
+      "goal": {
+        "name": "Goal",
+        "state": {
+          "track": "Just Tracking",
+          "avoid": "Avoid Pregnancy",
+          "plan": "Plan Pregnancy"
+        }
+      },
+      "confirmed_ovulation": {
+        "name": "Confirmed Ovulation Day"
+      },
+      "peak_day": {
+        "name": "Peak Day"
       }
-    },
-    "binary_sensor": {
+      },
+      "binary_sensor": {
       "period_active": {
         "name": "Period Active"
       }
-    }
-  },
-  "services": {
-    "log_period_start": {
+      }
+      },
+      "services": {
+      "log_period_start": {
       "name": "Log Period Start",
       "description": "Marks the start of a period. Will reset the cycle day to 1 on the given date.",
       "fields": {
@@ -75,8 +117,8 @@
           "description": "The date the period started. Defaults to today."
         }
       }
-    },
-    "update_settings": {
+      },
+      "update_settings": {
       "name": "Update Settings",
       "description": "Updates cycle length or period duration settings.",
       "fields": {
@@ -87,8 +129,64 @@
         "period_duration": {
           "name": "Period Duration",
           "description": "Typical length of a period in days."
+        },
+        "goal": {
+          "name": "Goal",
+          "description": "Primary goal (track, avoid, plan)."
         }
       }
-    }
-  }
-}
+      },
+      "log_symptom": {
+      "name": "Log Symptom",
+      "description": "Mark a symptom as occurring right now.",
+      "fields": {
+        "symptom": {
+          "name": "Symptom",
+          "description": "The symptom to log (cramps, headache, low_energy, mood_change)."
+        }
+      }
+      },
+      "log_bbt": {
+      "name": "Log BBT",
+      "description": "Record morning basal body temperature.",
+      "fields": {
+        "value": {
+          "name": "Temperature",
+          "description": "Temperature reading."
+        },
+        "date": {
+          "name": "Date",
+          "description": "Optional backdated entry."
+        }
+      }
+      },
+      "log_cm": {
+      "name": "Log CM",
+      "description": "Record cervical mucus consistency.",
+      "fields": {
+        "value": {
+          "name": "Consistency",
+          "description": "The observed consistency."
+        },
+        "date": {
+          "name": "Date",
+          "description": "Optional backdated entry."
+        }
+      }
+      },
+      "log_lh": {
+      "name": "Log LH",
+      "description": "Record LH test result.",
+      "fields": {
+        "value": {
+          "name": "Result",
+          "description": "The test result."
+        },
+        "date": {
+          "name": "Date",
+          "description": "Optional backdated entry."
+        }
+      }
+      }
+      }
+      }

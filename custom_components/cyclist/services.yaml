@@ -11,7 +11,7 @@ log_period_start:
 
 update_settings:
   name: Update Settings
-  description: Update cycle length and/or period duration.
+  description: Update cycle length, period duration, or primary goal.
   fields:
     cycle_length:
       name: Cycle Length
@@ -31,3 +31,106 @@ update_settings:
           min: 1
           max: 14
           mode: box
+    goal:
+      name: Goal
+      description: "Primary cycle tracking goal."
+      example: "avoid"
+      selector:
+        select:
+          options:
+            - label: Just Tracking
+              value: track
+            - label: Avoid Pregnancy
+              value: avoid
+            - label: Plan Pregnancy
+              value: plan
+
+log_symptom:
+  name: Log Symptom
+  description: Mark a symptom as occurring right now.
+  fields:
+    symptom:
+      name: Symptom
+      description: "The symptom to log."
+      example: "cramps"
+      selector:
+        select:
+          options:
+            - label: Cramps
+              value: cramps
+            - label: Headache
+              value: headache
+            - label: Low Energy
+              value: low_energy
+            - label: Mood Change
+              value: mood_change
+
+log_bbt:
+  name: Log Basal Body Temperature
+  description: Record morning basal body temperature.
+  fields:
+    value:
+      name: Temperature
+      description: "Temperature reading (e.g., 97.5 or 36.5)."
+      example: 98.2
+      selector:
+        number:
+          min: 90
+          max: 105
+          step: 0.01
+          mode: box
+    date:
+      name: Date
+      description: "Optional backdated entry (YYYY-MM-DD)."
+      selector:
+        date:
+
+log_cm:
+  name: Log Cervical Mucus
+  description: Record cervical mucus consistency.
+  fields:
+    value:
+      name: Consistency
+      description: "The observed consistency."
+      example: "egg_white"
+      selector:
+        select:
+          options:
+            - label: Dry
+              value: dry
+            - label: Sticky
+              value: sticky
+            - label: Creamy
+              value: creamy
+            - label: Watery
+              value: watery
+            - label: Egg White
+              value: egg_white
+    date:
+      name: Date
+      description: "Optional backdated entry (YYYY-MM-DD)."
+      selector:
+        date:
+
+log_lh:
+  name: Log LH Test
+  description: Record Luteinizing Hormone (ovulation) test result.
+  fields:
+    value:
+      name: Result
+      description: "The test result."
+      example: "positive"
+      selector:
+        select:
+          options:
+            - label: Negative
+              value: negative
+            - label: Positive
+              value: positive
+            - label: Peak
+              value: peak
+    date:
+      name: Date
+      description: "Optional backdated entry (YYYY-MM-DD)."
+      selector:
+        date:

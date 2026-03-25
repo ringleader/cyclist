@@ -7,7 +7,9 @@
         "description": "Configure your cycle parameters.",
         "data": {
           "cycle_length": "Cycle Length (Days)",
-          "period_duration": "Period Duration (Days)"
+          "period_duration": "Period Duration (Days)",
+          "last_period_start": "Last Period Start Date",
+          "goal": "Primary Goal"
         }
       }
     },
@@ -25,12 +27,77 @@
         "title": "Update Cyclist Settings",
         "data": {
           "cycle_length": "Cycle Length (Days)",
-          "period_duration": "Period Duration (Days)"
+          "period_duration": "Period Duration (Days)",
+          "last_period_start": "Last Period Start Date",
+          "goal": "Primary Goal"
         }
       }
     },
     "error": {
       "invalid_length": "Cycle length must be greater than period duration."
+    }
+  },
+  "selector": {
+    "goal": {
+      "options": {
+        "track": "Just Tracking",
+        "avoid": "Avoid Pregnancy",
+        "plan": "Plan Pregnancy"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "cycle_day": {
+        "name": "Cycle Day"
+      },
+      "phase": {
+        "name": "Cycle Phase",
+        "state": {
+          "menstruation": "Menstruation",
+          "follicular": "Follicular",
+          "ovulation": "Ovulation",
+          "luteal": "Luteal"
+        }
+      },
+      "fertility": {
+        "name": "Fertility Level",
+        "state": {
+          "fertile": "Fertile",
+          "low": "Low",
+          "safer": "Safer"
+        }
+      },
+      "fertility_status": {
+        "name": "Fertility Status",
+        "state": {
+          "fertile": "Fertile",
+          "low": "Low",
+          "safer": "Safer",
+          "high_chance": "High Chance",
+          "caution": "Caution",
+          "low_chance": "Low Chance",
+          "peak_fertility": "Peak Fertility",
+          "fertility_rising": "Fertility Rising",
+          "low_fertility": "Low Fertility"
+        }
+      },
+      "next_period": {
+        "name": "Next Period"
+      },
+      "goal": {
+        "name": "Goal",
+        "state": {
+          "track": "Just Tracking",
+          "avoid": "Avoid Pregnancy",
+          "plan": "Plan Pregnancy"
+        }
+      }
+    },
+    "binary_sensor": {
+      "period_active": {
+        "name": "Period Active"
+      }
     }
   }
 }
