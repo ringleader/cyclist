@@ -25,7 +25,7 @@ A Home Assistant custom component that tracks menstrual cycles and surfaces fert
 ### HACS (Recommended)
 1. Open **HACS** in Home Assistant.
 2. Go to **Integrations** > **Custom Repositories**.
-3. Add `https://github.com/your-username/cyclist` as an **Integration**.
+3. Add `https://github.com/ringleader/cyclist` as an **Integration**.
 4. Install **Cyclist** and restart Home Assistant.
 
 ### Manual
