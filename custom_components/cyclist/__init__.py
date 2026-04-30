@@ -67,7 +67,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     hass.data[DOMAIN][entry.entry_id] = cyclist_data
 
-    entry.async_on_remove(entry.add_update_listener(update_listener))
+    entry.async_on_unload(entry.add_update_listener(update_listener))
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
@@ -79,7 +79,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Check once an hour
     from homeassistant.helpers.event import async_track_time_interval
     from datetime import timedelta
-    entry.async_on_remove(
+    entry.async_on_unload(
         async_track_time_interval(hass, check_rollover_periodically, timedelta(hours=1))
     )
 
