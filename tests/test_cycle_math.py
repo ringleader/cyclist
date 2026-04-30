@@ -20,6 +20,7 @@ from custom_components.cyclist.const import (
     PHASE_FOLLICULAR,
     PHASE_OVULATION,
     PHASE_LUTEAL,
+    PHASE_LATE,
     FERTILITY_FERTILE,
     FERTILITY_LOW,
     FERTILITY_SAFER,
@@ -113,7 +114,7 @@ def test_long_cycle():
 
 def test_edge_cases():
     # day > cycle_length
-    assert get_phase(30, 28, 5) == PHASE_LUTEAL
+    assert get_phase(30, 28, 5) == PHASE_LATE
 
 def test_detect_bbt_shift():
     # Baseline 6 days: 97.0

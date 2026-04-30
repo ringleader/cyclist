@@ -22,6 +22,7 @@ PHASE_MENSTRUATION = "menstruation"
 PHASE_FOLLICULAR = "follicular"
 PHASE_OVULATION = "ovulation"
 PHASE_LUTEAL = "luteal"
+PHASE_LATE = "late"
 
 FERTILITY_FERTILE = "fertile"
 FERTILITY_LOW = "low"

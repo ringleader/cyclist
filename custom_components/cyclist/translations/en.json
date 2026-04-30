@@ -58,7 +58,8 @@
           "menstruation": "Menstruation",
           "follicular": "Follicular",
           "ovulation": "Ovulation",
-          "luteal": "Luteal"
+          "luteal": "Luteal",
+          "late": "Late"
         }
       },
       "fertility": {
@@ -104,6 +105,48 @@
       "binary_sensor": {
       "period_active": {
         "name": "Period Active"
+      },
+      "overdue": {
+        "name": "Cycle Overdue"
+      }
+      },
+      "button": {
+      "log_period_today": {
+        "name": "Log Period Started Today"
+      },
+      "log_period_yesterday": {
+        "name": "Log Period Started Yesterday"
+      },
+      "log_period_2_days_ago": {
+        "name": "Log Period Started 2 Days Ago"
+      },
+      "log_period_3_days_ago": {
+        "name": "Log Period Started 3 Days Ago"
+      },
+      "log_period_4_days_ago": {
+        "name": "Log Period Started 4 Days Ago"
+      },
+      "log_period_5_days_ago": {
+        "name": "Log Period Started 5 Days Ago"
+      },
+      "delay_prediction": {
+        "name": "Delay Prediction (+1 Day)"
+      },
+      "advance_prediction": {
+        "name": "Advance Prediction (-1 Day)"
+      }
+      },
+      "switch": {
+      "menstruating": {
+        "name": "Menstruating"
+      }
+      },
+      "number": {
+      "cycle_length": {
+        "name": "Cycle Length"
+      },
+      "period_duration": {
+        "name": "Period Duration"
       }
       }
       },
@@ -115,6 +158,16 @@
         "date": {
           "name": "Date",
           "description": "The date the period started. Defaults to today."
+        }
+      }
+      },
+      "shift_prediction": {
+      "name": "Shift Prediction",
+      "description": "Shift the predicted next period by a number of days. Useful if you know the period will be late or early.",
+      "fields": {
+        "offset": {
+          "name": "Offset",
+          "description": "Number of days to shift (positive for late, negative for early)."
         }
       }
       },

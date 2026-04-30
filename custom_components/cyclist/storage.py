@@ -16,6 +16,7 @@ class CyclistSettings(TypedDict):
     cycle_length: int
     period_duration: int
     goal: str
+    prediction_offset: int # Days to shift NEXT prediction
 
 class CyclistStorageData(TypedDict):
     version: int
@@ -56,10 +57,37 @@ class CyclistData:
             # Migration/Defaults
             if "goal" not in self.data["settings"]:
                 self.data["settings"]["goal"] = GOAL_TRACK
+            if "prediction_offset" not in self.data["settings"]:
+                self.data["settings"]["prediction_offset"] = 0
             if "symptoms" not in self.data:
                 self.data["symptoms"] = {}
             if "daily_logs" not in self.data:
                 self.data["daily_logs"] = {}
+                
+            # Automatic Rollover: If we are way past the predicted start, 
+            # assume the cycle rolled over automatically.
+            await self.async_check_rollover()
+
+    async def async_check_rollover(self) -> None:
+        """Check if the cycle should have rolled over automatically."""
+        if not self.last_period_start:
+            return
+            
+        today = date.today()
+        cycle_length = self.cycle_length
+        # We use a 1-day grace period before auto-rolling over 
+        # to give the user a chance to log a "Late" state.
+        # If it's 2 days late and no input, we assume it started.
+        next_predicted = self.last_period_start + timedelta(days=cycle_length)
+        
+        if today >= next_predicted + timedelta(days=2):
+            # Calculate how many cycles to roll over
+            days_since = (today - self.last_period_start).days
+            num_cycles = days_since // cycle_length
+            
+            new_start = self.last_period_start + timedelta(days=num_cycles * cycle_length)
+            _LOGGER.info("Automatically rolling over cycle to %s", new_start)
+            await self.async_set_last_period_start(new_start)
 
     async def async_save(self) -> None:
         """Save data to storage."""
@@ -98,6 +126,11 @@ class CyclistData:
         return self.data["settings"]["period_duration"] if self.data else 5
 
     @property
+    def prediction_offset(self) -> int:
+        """Get prediction offset."""
+        return self.data["settings"].get("prediction_offset", 0) if self.data else 0
+
+    @property
     def goal(self) -> str:
         """Get goal."""
         return self.data["settings"].get("goal", GOAL_TRACK) if self.data else GOAL_TRACK
@@ -111,6 +144,14 @@ class CyclistData:
         """Set last period start date."""
         if self.data:
             self.data["last_period_start"] = new_date.isoformat()
+            # Reset offset when a new cycle starts
+            self.data["settings"]["prediction_offset"] = 0
+            await self.async_save()
+
+    async def async_set_prediction_offset(self, offset: int) -> None:
+        """Set prediction offset."""
+        if self.data:
+            self.data["settings"]["prediction_offset"] = offset
             await self.async_save()
 
     async def async_set_settings(self, cycle_length: int, period_duration: int, goal: str | None = None) -> None:

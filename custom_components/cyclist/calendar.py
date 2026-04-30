@@ -63,11 +63,16 @@ class CyclistCalendar(CalendarEntity):
             
         cycle_length = self.cyclist_data.cycle_length
         period_duration = self.cyclist_data.period_duration
+        offset = self.cyclist_data.prediction_offset
         fw_start, fw_end = calculate_fertility_window(cycle_length)
         
         # Generate for current + next 3 cycles (total 4)
         for i in range(4):
-            cycle_start_date = last_start + timedelta(days=i * cycle_length)
+            # Apply offset ONLY to the first predicted cycle if it's currently relevant
+            # But usually, an offset shifts ALL future predictions relative to the last start
+            current_offset = offset if i >= 0 else 0
+            
+            cycle_start_date = last_start + timedelta(days=i * cycle_length + current_offset)
             
             # Period Event
             period_end_date = cycle_start_date + timedelta(days=period_duration)

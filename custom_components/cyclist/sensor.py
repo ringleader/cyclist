@@ -110,11 +110,17 @@ class CyclePhaseSensor(CyclistBaseSensor):
     """Sensor for current cycle phase."""
 
     _attr_translation_key = "phase"
-    _attr_icon = "mdi:moon-waning-crescent"
 
     def __init__(self, data: CyclistData, entry_id: str, name: str) -> None:
         super().__init__(data, entry_id, name)
         self._attr_unique_id = f"{entry_id}_phase"
+
+    @property
+    def icon(self) -> str:
+        """Dynamic icon based on phase."""
+        if self.native_value == "late":
+            return "mdi:calendar-alert"
+        return "mdi:moon-waning-crescent"
 
     @property
     def native_value(self) -> str | None:
@@ -299,7 +305,10 @@ class NextPeriodSensor(CyclistBaseSensor):
         if not last_start:
             return None
         return calculate_days_until_next_period(
-            date.today(), last_start, self.cyclist_data.cycle_length
+            date.today(), 
+            last_start, 
+            self.cyclist_data.cycle_length,
+            self.cyclist_data.prediction_offset
         )
 
 
