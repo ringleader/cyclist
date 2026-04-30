@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import logging
 from typing import Any, TypedDict, cast
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.storage import Store
