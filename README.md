@@ -12,8 +12,11 @@ A Home Assistant custom component that tracks menstrual cycles and surfaces fert
 
 ## 🚀 Features
 
+- **Proactive Automation:** Automatically rolls over the cycle on the predicted date if no manual input is provided, keeping your tracking on track without daily maintenance.
 - **Privacy First:** All data is stored locally in your Home Assistant instance. No cloud, no subscriptions.
 - **Calendar Predictions:** Automated 3-month forward-looking projections for periods and fertile windows.
+- **Enhanced UI Controls:** New one-tap buttons for backdating period starts (up to 5 days ago) and shifting predictions if your cycle is early or late.
+- **Menstruating Switch:** A simple toggle to mark the start of a period and reflect the current state.
 - **Advanced Mode (Symptothermal Method):** Optional tracking for BBT, CM, and LH to confirm ovulation with precision.
 - **Goal-Oriented:** Configure your goal as "Plan Pregnancy", "Avoid Pregnancy", or "Just Tracking" to receive tailored status updates.
 - **Service Integration:** Easily log data from physical buttons, NFC tags, or custom dashboards.

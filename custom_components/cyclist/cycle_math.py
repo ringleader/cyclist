@@ -6,6 +6,7 @@ from .const import (
     PHASE_FOLLICULAR,
     PHASE_OVULATION,
     PHASE_LUTEAL,
+    PHASE_LATE,
     FERTILITY_FERTILE,
     FERTILITY_LOW,
     FERTILITY_SAFER,
@@ -28,13 +29,13 @@ def is_period_active(cycle_day: int, period_duration: int) -> bool:
     """Check if period is ongoing."""
     return cycle_day <= period_duration
 
-def calculate_next_period_date(last_period_start: date, cycle_length: int) -> date:
+def calculate_next_period_date(last_period_start: date, cycle_length: int, offset: int = 0) -> date:
     """Calculate date of next predicted period."""
-    return last_period_start + timedelta(days=cycle_length)
+    return last_period_start + timedelta(days=cycle_length + offset)
 
-def calculate_days_until_next_period(today: date, last_period_start: date, cycle_length: int) -> int:
+def calculate_days_until_next_period(today: date, last_period_start: date, cycle_length: int, offset: int = 0) -> int:
     """Calculate days remaining until next period."""
-    next_date = calculate_next_period_date(last_period_start, cycle_length)
+    next_date = calculate_next_period_date(last_period_start, cycle_length, offset)
     return (next_date - today).days
 
 def calculate_fertility_window(cycle_length: int) -> tuple[int, int]:
@@ -117,6 +118,9 @@ def get_fertility_status(
 
 def get_phase(cycle_day: int, cycle_length: int, period_duration: int) -> str:
     """Get cycle phase for a given day."""
+    if cycle_day > cycle_length:
+        return PHASE_LATE
+        
     if cycle_day <= period_duration:
         return PHASE_MENSTRUATION
         
@@ -140,22 +144,26 @@ def detect_bbt_shift(temperatures: list[float]) -> int | None:
     if len(temperatures) < 9:
         return None
 
-    # We need at least 6 baseline days + 3 shift days
-    for i in range(6, len(temperatures) - 2):
-        baseline = temperatures[i-6:i]
+    # We need at least 3 consecutive shift days
+    for i in range(len(temperatures) - 2):
         shift = temperatures[i:i+3]
+        # Shift days must be consecutive and non-None
+        if any(t is None for t in shift):
+            continue
+            
+        # Look back for 6 baseline days (not necessarily immediate indices)
+        baseline = []
+        for j in range(i - 1, -1, -1):
+            if temperatures[j] is not None:
+                baseline.append(temperatures[j])
+            if len(baseline) == 6:
+                break
         
-        # Filter out None values
-        baseline = [t for t in baseline if t is not None]
-        shift = [t for t in shift if t is not None]
-        
-        if len(baseline) < 6 or len(shift) < 3:
+        if len(baseline) < 6:
             continue
             
         avg_baseline = sum(baseline) / 6
-        # Shift must be at least 0.2F or 0.11C higher
-        # Since we don't know the unit here, we use a small but significant delta
-        # A common threshold is 0.2F (approx 0.1C)
+        # Shift must be higher than the baseline average
         if all(t > avg_baseline + 0.1 for t in shift):
             return i
             

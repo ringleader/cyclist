@@ -28,7 +28,7 @@ from .storage import CyclistData
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.CALENDAR]
+PLATFORMS: list[Platform] = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.CALENDAR, Platform.BUTTON, Platform.SWITCH, Platform.NUMBER]
 
 SERVICE_LOG_PERIOD_START = "log_period_start"
 SERVICE_UPDATE_SETTINGS = "update_settings"
@@ -36,6 +36,7 @@ SERVICE_LOG_SYMPTOM = "log_symptom"
 SERVICE_LOG_BBT = "log_bbt"
 SERVICE_LOG_CM = "log_cm"
 SERVICE_LOG_LH = "log_lh"
+SERVICE_SHIFT_PREDICTION = "shift_prediction"
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Cyclist from a config entry."""
@@ -69,6 +70,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     entry.async_on_unload(entry.add_update_listener(update_listener))
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    # Periodic rollover check
+    async def check_rollover_periodically(_now: Any) -> None:
+        """Periodic task to check for cycle rollover."""
+        await cyclist_data.async_check_rollover()
+
+    # Check once an hour
+    from homeassistant.helpers.event import async_track_time_interval
+    from datetime import timedelta
+    entry.async_on_unload(
+        async_track_time_interval(hass, check_rollover_periodically, timedelta(hours=1))
+    )
 
     # Register services
     if not hass.services.has_service(DOMAIN, SERVICE_LOG_PERIOD_START):
@@ -183,6 +196,21 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             schema=vol.Schema({
                 vol.Required("value"): vol.In(LH_RESULTS),
                 vol.Optional("date"): cv.date,
+            }),
+        )
+
+    if not hass.services.has_service(DOMAIN, SERVICE_SHIFT_PREDICTION):
+        async def handle_shift_prediction(call: ServiceCall) -> None:
+            offset = call.data["offset"]
+            for entry_id, data in hass.data[DOMAIN].items():
+                await data.async_set_prediction_offset(offset)
+
+        hass.services.async_register(
+            DOMAIN,
+            SERVICE_SHIFT_PREDICTION,
+            handle_shift_prediction,
+            schema=vol.Schema({
+                vol.Required("offset"): vol.Coerce(int),
             }),
         )
 

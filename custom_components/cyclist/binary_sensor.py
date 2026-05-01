@@ -24,7 +24,10 @@ async def async_setup_entry(
     cyclist_data: CyclistData = hass.data[DOMAIN][entry.entry_id]
 
     async_add_entities(
-        [PeriodActiveSensor(cyclist_data, entry.entry_id, entry.title)]
+        [
+            PeriodActiveSensor(cyclist_data, entry.entry_id, entry.title),
+            OverdueSensor(cyclist_data, entry.entry_id, entry.title),
+        ]
     )
 
 
@@ -64,3 +67,35 @@ class PeriodActiveSensor(BinarySensorEntity):
         if not self.cyclist_data.last_period_start:
             return {"status": "no data — call cyclist.log_period_start"}
         return {}
+
+
+class OverdueSensor(BinarySensorEntity):
+    """Binary sensor for overdue cycle."""
+
+    _attr_has_entity_name = True
+    _attr_translation_key = "overdue"
+    _attr_icon = "mdi:calendar-alert"
+
+    def __init__(self, data: CyclistData, entry_id: str, name: str) -> None:
+        """Initialize the sensor."""
+        self.cyclist_data = data
+        self._attr_unique_id = f"{entry_id}_overdue"
+        self._attr_device_info = {
+            "identifiers": {(DOMAIN, entry_id)},
+            "name": name,
+        }
+
+    async def async_added_to_hass(self) -> None:
+        """When entity is added to hass."""
+        self.async_on_remove(
+            self.cyclist_data.add_listener(self.async_write_ha_state)
+        )
+
+    @property
+    def is_on(self) -> bool | None:
+        """Return true if cycle is overdue."""
+        last_start = self.cyclist_data.last_period_start
+        if not last_start:
+            return None
+        cycle_day = calculate_cycle_day(date.today(), last_start)
+        return cycle_day > self.cyclist_data.cycle_length

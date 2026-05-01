@@ -2,27 +2,68 @@ type: vertical-stack
 cards:
   - type: entities
     title: Menstrual Cycle
+    show_header_toggle: false
     entities:
       - entity: sensor.cyclist_cycle_day
       - entity: sensor.cyclist_phase
-      - entity: sensor.cyclist_fertility
+      - entity: sensor.cyclist_fertility_status
       - entity: sensor.cyclist_next_period
-      - entity: binary_sensor.cyclist_period_active
+      - entity: switch.cyclist_menstruating
+        name: Currently Menstruating
+      - entity: binary_sensor.cyclist_overdue
+  
   - type: gauge
     entity: sensor.cyclist_cycle_day
     min: 1
-    max: 28 # Change to your cycle length
+    max: 28 # Change this to your Cycle Length
     name: Cycle Progress
+    needle: true
+
   - type: calendar
     entities:
       - calendar.cyclist_predictions
+
   - type: vertical-stack
-    title: Daily Tracking
+    title: Log Period Start
     cards:
-      - type: entities
-        entities:
-          - entity: sensor.cyclist_confirmed_ovulation
-          - entity: sensor.cyclist_peak_day
+      - type: horizontal-stack
+        cards:
+          - type: button
+            entity: button.cyclist_log_period_today
+            name: Today
+          - type: button
+            entity: button.cyclist_log_period_yesterday
+            name: Yesterday
+          - type: button
+            entity: button.cyclist_log_period_2_days_ago
+            name: 2 Days Ago
+      - type: horizontal-stack
+        cards:
+          - type: button
+            entity: button.cyclist_log_period_3_days_ago
+            name: 3 Days Ago
+          - type: button
+            entity: button.cyclist_log_period_4_days_ago
+            name: 4 Days Ago
+          - type: button
+            entity: button.cyclist_log_period_5_days_ago
+            name: 5 Days Ago
+
+  - type: vertical-stack
+    title: Prediction Adjustments
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: button
+            entity: button.cyclist_delay_prediction
+            name: Late (+1 Day)
+          - type: button
+            entity: button.cyclist_advance_prediction
+            name: Early (-1 Day)
+
+  - type: vertical-stack
+    title: Symptom & Data Logging
+    cards:
       - type: horizontal-stack
         cards:
           - type: button
