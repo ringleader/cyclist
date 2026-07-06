@@ -50,17 +50,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     period_duration = entry.options.get(CONF_PERIOD_DURATION, entry.data.get(CONF_PERIOD_DURATION, 5))
     goal = entry.options.get(CONF_GOAL, entry.data.get(CONF_GOAL, DEFAULT_GOAL))
     
-    # Get last period start
-    last_start_val = entry.options.get(CONF_LAST_PERIOD_START)
-    if not last_start_val:
-        last_start_val = entry.data.get(CONF_LAST_PERIOD_START)
-        
-    if last_start_val:
-        if isinstance(last_start_val, str):
-            last_start_date = date.fromisoformat(last_start_val)
-        else:
-            last_start_date = last_start_val
-        await cyclist_data.async_set_last_period_start(last_start_date)
+    # Get last period start — only use config entry value if storage has no value yet
+    # (storage is the source of truth once a period has been logged via the service)
+    if cyclist_data.last_period_start is None:
+        last_start_val = entry.options.get(CONF_LAST_PERIOD_START)
+        if not last_start_val:
+            last_start_val = entry.data.get(CONF_LAST_PERIOD_START)
+
+        if last_start_val:
+            if isinstance(last_start_val, str):
+                last_start_date = date.fromisoformat(last_start_val)
+            else:
+                last_start_date = last_start_val
+            await cyclist_data.async_set_last_period_start(last_start_date)
     
     await cyclist_data.async_set_settings(cycle_length, period_duration, goal)
 
