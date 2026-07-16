@@ -76,7 +76,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             log_date = call.data.get("date", date.today())
             if log_date > date.today():
                 raise ValueError("Cannot log a period start in the future")
-            
+
             # Find target entries
             ent_reg = er.async_get(hass)
             entry_ids = set()
@@ -92,7 +92,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             for entry_id, data in hass.data[DOMAIN].items():
                 # For now, apply to all. In a production multi-user HA, 
                 # you'd filter by call.context or call.data targets.
+                
+                # 1. Update memory
                 await data.async_set_last_period_start(log_date)
+                
+                # 2. Persist to ConfigEntry
+                entry = hass.config_entries.async_get_entry(entry_id)
+                if entry:
+                    new_options = dict(entry.options)
+                    new_options[CONF_LAST_PERIOD_START] = log_date.isoformat()
+                    hass.config_entries.async_update_entry(entry, options=new_options)
 
         hass.services.async_register(
             DOMAIN,
